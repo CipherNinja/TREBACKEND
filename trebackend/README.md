@@ -159,12 +159,6 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-### Create Superuser
-```
-python manage.py createsuperuser
-```
-Provide a username and password when prompted.
-
 ### Run Django Server
 ```
 python manage.py runserver
