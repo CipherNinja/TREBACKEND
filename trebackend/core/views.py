@@ -1,0 +1,58 @@
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Course, Subject
+from .serializers import CourseSerializer
+from django.http import FileResponse
+from django.conf import settings
+import os
+
+
+@api_view(['GET'])
+def course_api(request):
+
+    course_id = request.GET.get('course_id')
+    subject_id = request.GET.get('subject_id')
+    pdf_request = request.GET.get('pdf') == "true"
+
+    if not course_id and not subject_id:
+        courses = Course.objects.prefetch_related('subjects').all()
+        response_data = [
+            {
+                "id": course.id,
+                "title": course.title,
+                "subjects": [
+                    {"id": subject.id, "title": subject.title}
+                    for subject in course.subjects.all()
+                ]
+            }
+            for course in courses
+        ]
+        return Response(response_data)
+
+
+    try:
+        course = Course.objects.prefetch_related('subjects').get(id=course_id)
+        subject = Subject.objects.prefetch_related('exam_patterns', 'subject_contents').get(id=subject_id, course=course)
+    except Course.DoesNotExist:
+        return Response({"error": "Course not found"}, status=404)
+    except Subject.DoesNotExist:
+        return Response({"error": "Subject not found"}, status=404)
+
+    
+    if pdf_request:
+        if not subject.pdf_link:
+            return Response({"error": "No PDF available for this subject"}, status=404)
+
+        pdf_path = os.path.join(settings.MEDIA_ROOT, subject.pdf_link.name)
+        if os.path.exists(pdf_path):
+            return FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
+        else:
+            return Response({"error": "File not found"}, status=404)
+
+    
+
+    response_data = {
+        "course": CourseSerializer(course).data,
+    }
+    
+    return Response(response_data)
