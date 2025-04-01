@@ -90,21 +90,20 @@ def course_api(request):
 
 @api_view(['GET'])
 def pyq_api(request):
-    file_path = request.GET.get('file')
-    
-    if file_path:
-        absolute_path = os.path.join(settings.MEDIA_ROOT, file_path.lstrip('/media/'))
-        if os.path.exists(absolute_path):
-            return FileResponse(open(absolute_path, 'rb'), content_type='application/pdf')
-        else:
-            return Response({"error": "File not found"}, status=404)
-    
+    file_name = request.GET.get('file')
+
+    if file_name:
+        file_path = os.path.join(settings.MEDIA_ROOT, 'pyqs', file_name)
+        if os.path.exists(file_path):
+            return FileResponse(open(file_path, 'rb'), content_type='application/pdf')
+        return Response({"error": "File not found"}, status=404)
+
     courses = Course.objects.prefetch_related('pyqs').all()
     pyq_data = {}
-    
+
     for course in courses:
-        pyq_files = [pyq.file.url for pyq in course.pyqs.all()]
+        pyq_files = [pyq.filename for pyq in course.pyqs.all()]
         if pyq_files:
             pyq_data[course.title] = pyq_files
-    
+
     return Response(pyq_data)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import FileExtensionValidator
 from django.core.exceptions import ValidationError
+import os
 
 class Course(models.Model):
     title = models.CharField(max_length=255)
@@ -76,4 +77,8 @@ class PYQ(models.Model):
     ) 
 
     def __str__(self):
-        return f"{self.course.title} - {self.file.name}"
+        return f"{self.course.title} - {os.path.basename(self.file.name)}"
+    
+    @property
+    def filename(self):
+        return os.path.basename(self.file.name)

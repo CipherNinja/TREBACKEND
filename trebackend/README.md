@@ -20,7 +20,7 @@
    - **Method**: `GET`
    - **Description**: Retrieves a list of all PYQs categorized by course.
 5. **Get a Specific PYQ PDF**
-   - **URL**: `/api/v2/?file={file_path}`
+   - **URL**: `/api/v2/?file={file_name}`
    - **Method**: `GET`
    - **Description**: If a file parameter is provided, returns the requested PDF file.
 
@@ -128,17 +128,17 @@
 ```json
 {
     "BPSC TRE": [
-        "/media/pyqs/PDF_to_Teach.pdf",
-        "/media/pyqs/sample.pdf"
+        "PDF_to_Teach.pdf",
+        "sample.pdf"
     ],
     "BIHAR STET": [
-        "/media/pyqs/sample_NVkbLDO.pdf"
+        "sample_NVkbLDO.pdf"
     ]
 }
 ```
 
 ### Get a Specific PYQ PDF
-**Endpoint**: `GET /api/v2/?file=/media/pyqs/sample.pdf`
+**Endpoint**: `GET /api/v2/?file=sample.pdf`
 **Response**: Returns the requested PDF file or an error message.
 ```json
 {
