@@ -15,11 +15,19 @@
    - **URL**: `/api/v1/?course_id={course_id}&subject_id={subject_id}&pdf=true`
    - **Method**: `GET`
    - **Description**: Downloads a PDF file for the requested subject if available.
-4. **Fetch All PYQs**
+4. **Fetch List of Syllabus Files**
+   - **URL**: `/api/v1/?course_id={course_id}&subject_id={subject_id}&syllabus_list=true`
+   - **Method**: `GET`
+   - **Description**: Returns a list of syllabus filenames available for the specified subject.
+5. **Download a Specific Syllabus PDF**
+   - **URL**: `/api/v1/?course_id={course_id}&subject_id={subject_id}&syllabus={filename}`
+   - **Method**: `GET`
+   - **Description**: Returns the specified syllabus file as a PDF download for the given subject.
+6. **Fetch All PYQs**
    - **URL**: `/api/v2/`
    - **Method**: `GET`
    - **Description**: Retrieves a list of all PYQs categorized by course.
-5. **Get a Specific PYQ PDF**
+7. **Get a Specific PYQ PDF**
    - **URL**: `/api/v2/?file={file_name}`
    - **Method**: `GET`
    - **Description**: If a file parameter is provided, returns the requested PDF file.
@@ -76,19 +84,21 @@
                 "title": "PGT(11-12)",
                 "description": "The Bihar Computer Science Teacher Recruitment 2023 is conducted by the Education Department of Bihar. The candidates must refer to the following table for more information on the Bihar Computer Science Teacher Syllabus..",
                 "pdf_link": "/media/pdfs/Reference_Income_Tax_Notes_Dec_Batch.pdf",
+                "total_questions": 100,
+                "total_marks": 120,
                 "exam_patterns": [
                     {
                         "topics": "Language (Qualifying)",
                         "sub_topics": "Part - 1 English, Part - 2 Hindi / Urdu / Bengali",
-                        "total_questions": "25,75",
-                        "total_marks": "25,75",
+                        "no_of_questions": "25,75",
+                        "maximum_marks": "25,75",
                         "duration": 2
                     },
                     {
                         "topics": "Subject And General Studies",
                         "sub_topics": "Part - 1 Concerned Subject, Part - 2 General Studies",
-                        "total_questions": "80, 40",
-                        "total_marks": "80, 40",
+                        "no_of_questions": "80, 40",
+                        "maximum_marks": "80, 40",
                         "duration": 2
                     }
                 ],
@@ -119,6 +129,43 @@
 }
 {
     "error": "File not found"
+}
+```
+
+### Fetch List of Syllabus Files
+**Endpoint**: `GET /api/v1/?course_id=2&subject_id=3&syllabus_list=true`
+**Response**:  Returns a list of syllabus filenames available for the specified subject.
+```json
+{
+    "syllabus_list": [
+        "103-Bangla.pdf",
+        "104-Maithili.pdf",
+        "106-Arabic.pdf",
+        "107-Persian.pdf",
+        "109-English.pdf",
+        "110-Mathematics.pdf",
+        "111-Science.pdf",
+        "112-Social-Studies.pdf",
+        "114-Music.pdf",
+        "115-Fine-Arts.pdf",
+        "116-Nritya.pdf",
+        "101-Hindi.pdf",
+        "102-Urdu.pdf",
+        "105-Sanskrit.pdf",
+        "108-Bhojpuri.pdf"
+    ]
+}
+```
+
+### Download a Specific Syllabus PDF
+**Endpoint**: `GET /api/v1/?course_id=2&subject_id=3&syllabus=108-Bhojpuri.pdf`
+**Response**:  Returns the requested syllabus file if found else returns an error.
+```json
+{
+    "error": "File not found"
+}
+{
+    "error": "Syllabus file not found for this subject"
 }
 ```
 

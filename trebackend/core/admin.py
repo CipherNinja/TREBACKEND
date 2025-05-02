@@ -1,6 +1,10 @@
 from django.contrib import admin
 from django import forms
-from .models import Course, Subject, Exam_Pattern, Subject_Content, PYQ
+from .models import Course, Subject, Exam_Pattern, Subject_Content, PYQ, Syllabus
+
+class SyllabusInline(admin.TabularInline):
+    model = Syllabus
+    extra = 1
 
 class PYQInline(admin.TabularInline):
     model = PYQ
@@ -31,7 +35,7 @@ class SubjectAdmin(admin.ModelAdmin):
     search_fields = ('title', 'course__title')
     list_filter = ('course',)
     ordering = ['id']
-    inlines = [ExamPatternInline, SubjectContentInline] 
+    inlines = [ExamPatternInline, SubjectContentInline, SyllabusInline] 
 
 class ExamPatternAdminForm(forms.ModelForm):
     class Meta:
@@ -39,5 +43,5 @@ class ExamPatternAdminForm(forms.ModelForm):
         fields = '__all__'
 
     sub_topics = forms.JSONField(widget=forms.Textarea, required=False)
-    total_questions = forms.JSONField(widget=forms.Textarea, required=False)
-    total_marks = forms.JSONField(widget=forms.Textarea, required=False)
+    no_of_questions = forms.JSONField(widget=forms.Textarea, required=False)
+    maximum_marks = forms.JSONField(widget=forms.Textarea, required=False)
