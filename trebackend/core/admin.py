@@ -26,7 +26,7 @@ class ExamPatternInline(admin.TabularInline):
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('title', 'banner')
     search_fields = ('title',)
-    inlines = [SubjectInline, PYQInline]  
+    inlines = [SubjectInline]  
     ordering = ['id']
 
 @admin.register(Subject)
@@ -35,7 +35,7 @@ class SubjectAdmin(admin.ModelAdmin):
     search_fields = ('title', 'course__title')
     list_filter = ('course',)
     ordering = ['id']
-    inlines = [ExamPatternInline, SubjectContentInline, SyllabusInline] 
+    inlines = [ExamPatternInline, SubjectContentInline, SyllabusInline, PYQInline] 
 
 class ExamPatternAdminForm(forms.ModelForm):
     class Meta:

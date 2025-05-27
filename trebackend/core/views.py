@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Course, Subject, Syllabus
-from django.http import FileResponse
+from .models import Course, Subject, Syllabus, PYQ
+from django.http import FileResponse, JsonResponse, Http404
 from django.conf import settings
 import os
 
@@ -109,20 +109,40 @@ def course_api(request):
 
 @api_view(['GET'])
 def pyq_api(request):
+    course_id = request.GET.get('course_id')
+    subject_id = request.GET.get('subject_id')
     file_name = request.GET.get('file')
 
-    if file_name:
-        file_path = os.path.join(settings.MEDIA_ROOT, 'pyqs', file_name)
-        if os.path.exists(file_path):
-            return FileResponse(open(file_path, 'rb'), content_type='application/pdf')
-        return Response({"error": "File not found"}, status=404)
+    # If file is provided → return the specific PDF
+    if course_id and subject_id and file_name:
+        try:
+            course = Course.objects.get(id=course_id)
+            subject = Subject.objects.get(id=subject_id, course=course)
+            pyq = subject.pyqs.get(file__icontains=file_name)
+            file_path = pyq.file.path
 
-    courses = Course.objects.prefetch_related('pyqs').all()
-    pyq_data = {}
+            if os.path.exists(file_path):
+                return FileResponse(open(file_path, 'rb'), content_type='application/pdf')
+            else:
+                raise Http404("File not found")
+        except (Course.DoesNotExist, Subject.DoesNotExist, PYQ.DoesNotExist):
+            return JsonResponse({"error": "Invalid course, subject, or file name"}, status=404)
 
-    for course in courses:
-        pyq_files = [pyq.filename for pyq in course.pyqs.all()]
-        if pyq_files:
-            pyq_data[course.title] = pyq_files
+    # If no file_name → return the nested JSON
+    if not course_id:
+        return JsonResponse({"error": "course_id is required"}, status=400)
 
-    return Response(pyq_data)
+    try:
+        course = Course.objects.get(id=course_id)
+    except Course.DoesNotExist:
+        return JsonResponse({"error": "Course not found"}, status=404)
+
+    data = {}
+    subject_map = {}
+
+    for subject in course.subjects.all():
+        subject_map[subject.title] = [pyq.filename for pyq in subject.pyqs.all()]
+
+    data[course.title] = subject_map
+
+    return JsonResponse(data)   

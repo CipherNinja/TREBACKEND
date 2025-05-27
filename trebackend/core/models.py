@@ -72,14 +72,14 @@ class Subject_Content(models.Model):
 
 
 class PYQ(models.Model):
-    course = models.ForeignKey(Course, related_name="pyqs", on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject, related_name="pyqs", on_delete=models.CASCADE)
     file = models.FileField(
         upload_to="pyqs/",
         validators=[FileExtensionValidator(allowed_extensions=['pdf'])]
     ) 
 
     def __str__(self):
-        return f"{self.course.title} - {os.path.basename(self.file.name)}"
+        return f"{self.subject.title} - {os.path.basename(self.file.name)}"
     
     @property
     def filename(self):
