@@ -24,13 +24,13 @@
    - **Method**: `GET`
    - **Description**: Returns the specified syllabus file as a PDF download for the given subject.
 6. **Fetch All PYQs**
-   - **URL**: `/api/v2/`
+   - **URL**: `/api/v2/?course_id={course_id}`
    - **Method**: `GET`
-   - **Description**: Retrieves a list of all PYQs categorized by course.
+   - **Description**: Retrieves a list of all PYQs categorized by subject under a specific course.
 7. **Get a Specific PYQ PDF**
-   - **URL**: `/api/v2/?file={file_name}`
+   - **URL**: `/api/v2/?course_id={course_id}&subject_id={subject_id}&file={filename}`
    - **Method**: `GET`
-   - **Description**: If a file parameter is provided, returns the requested PDF file.
+   - **Description**: If all the parameters are provided, returns the requested PDF file.
 
 ---
 
@@ -170,22 +170,32 @@
 ```
 
 ### Fetch All PYQs
-**Endpoint**: `GET /api/v2/`
+**Endpoint**: `GET /api/v2/?course_id=1`
 **Response**:
 ```json
 {
-    "BPSC TRE": [
-        "PDF_to_Teach.pdf",
-        "sample.pdf"
+  "BPSC TRE": {
+    "PGT (11-12)": [
+      "BPSC-Question-Paper-For-Class-11-12-Chemistry_SnMzKD4.pdf",
+      "BPSC-Question-Paper-For-Class-11-12-Zoology_ZERDdqL.pdf",    
     ],
-    "BIHAR STET": [
-        "sample_NVkbLDO.pdf"
+    "TGT (9-10)": [
+      "BPSC-Question-Paper-For-Class-9-10-Maths_LNLYxyz.pdf",
+      "BPSC-Question-Paper-For-Class-9-10-Arabic.pdf",
+    ],
+    "UPPER PRT (6-8)": [
+      "BPSC-Question-Paper-For-Class-6-8-English_UVQtBRB.pdf",
+      "BPSC-Question-Paper-For-Class-6-8-English_1_0sEl3Z5.pdf",
+    ],
+    "PRT (1-5)": [
+      "BPSC-Question-Paper-For-Class-1-5-General-Studies_1_ax2Rp8t.pdf"
     ]
+  }
 }
 ```
 
 ### Get a Specific PYQ PDF
-**Endpoint**: `GET /api/v2/?file=sample.pdf`
+**Endpoint**: `GET /api/v2/?course_id=1&subject_id=14&file=BPSC-Question-Paper-For-Class-11-12-Chemistry_SnMzKD4.pdf`
 **Response**: Returns the requested PDF file or an error message.
 ```json
 {
