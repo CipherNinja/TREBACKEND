@@ -113,7 +113,7 @@ def pyq_api(request):
     subject_id = request.GET.get('subject_id')
     file_name = request.GET.get('file')
 
-    # If file is provided → return the specific PDF
+    # Return specific file
     if course_id and subject_id and file_name:
         try:
             course = Course.objects.get(id=course_id)
@@ -128,21 +128,42 @@ def pyq_api(request):
         except (Course.DoesNotExist, Subject.DoesNotExist, PYQ.DoesNotExist):
             return JsonResponse({"error": "Invalid course, subject, or file name"}, status=404)
 
-    # If no file_name → return the nested JSON
-    if not course_id:
-        return JsonResponse({"error": "course_id is required"}, status=400)
+    # Return specific subject's PYQs grouped under subject title
+    if course_id and subject_id:
+        try:
+            course = Course.objects.get(id=course_id)
+            subject = Subject.objects.get(id=subject_id, course=course)
 
-    try:
-        course = Course.objects.get(id=course_id)
-    except Course.DoesNotExist:
-        return JsonResponse({"error": "Course not found"}, status=404)
+            pyq_files = [os.path.basename(pyq.file.name) for pyq in subject.pyqs.all()]
+            data = {
+                course.title: {
+                    subject.title: pyq_files
+                }
+            }
+            return JsonResponse(data)
 
-    data = {}
-    subject_map = {}
+        except Course.DoesNotExist:
+            return JsonResponse({"error": "Course not found"}, status=404)
+        except Subject.DoesNotExist:
+            return JsonResponse({"error": "Subject not found"}, status=404)
 
-    for subject in course.subjects.all():
-        subject_map[subject.title] = [pyq.filename for pyq in subject.pyqs.all()]
+    # Fallback to return all PYQs if only course_id is given
+    if course_id:
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return JsonResponse({"error": "Course not found"}, status=404)
 
-    data[course.title] = subject_map
+        data = {}
+        subject_map = {}
 
-    return JsonResponse(data)   
+        for subject in course.subjects.all():
+            subject_map[subject.title] = [
+                os.path.basename(pyq.file.name) for pyq in subject.pyqs.all()
+            ]
+
+        data[course.title] = subject_map
+        return JsonResponse(data)
+
+    return JsonResponse({"error": "course_id is required"}, status=400)
+
