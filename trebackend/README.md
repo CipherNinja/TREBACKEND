@@ -27,7 +27,11 @@
    - **URL**: `/api/v2/?course_id={course_id}`
    - **Method**: `GET`
    - **Description**: Retrieves a list of all PYQs categorized by subject under a specific course.
-7. **Get a Specific PYQ PDF**
+7. **Fetch All PYQs of specific subject**
+   - **URL**: `/api/v2/?course_id={course_id}&subject_id={subject_id}`
+   - **Method**: `GET`
+   - **Description**: Retrieves a list of all PYQs of specific subject under a specific course.
+8. **Get a Specific PYQ PDF**
    - **URL**: `/api/v2/?course_id={course_id}&subject_id={subject_id}&file={filename}`
    - **Method**: `GET`
    - **Description**: If all the parameters are provided, returns the requested PDF file.
@@ -189,6 +193,20 @@
     ],
     "PRT (1-5)": [
       "BPSC-Question-Paper-For-Class-1-5-General-Studies_1_ax2Rp8t.pdf"
+    ]
+  }
+}
+```
+
+### Fetch All PYQs of specific subject
+**Endpoint**: `GET /api/v2/?course_id=1&subject_id=14`
+**Response**:
+```json
+{
+  "BPSC TRE": {
+    "PGT (11-12)": [
+      "BPSC-Question-Paper-For-Class-11-12-Chemistry_SnMzKD4.pdf",
+      "BPSC-Question-Paper-For-Class-11-12-Zoology_ZERDdqL.pdf",    
     ]
   }
 }
