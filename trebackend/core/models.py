@@ -14,6 +14,12 @@ class Course(models.Model):
     def __str__(self):
         return self.title
 
+class Sub_Courses(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="sub_courses")
+    title = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.title}"
 
 class Subject(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='subjects')

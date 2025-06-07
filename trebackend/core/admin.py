@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django import forms
-from .models import Course, Subject, Exam_Pattern, Subject_Content, PYQ, Syllabus
+from .models import Course, Subject, Exam_Pattern, Subject_Content, PYQ, Syllabus, Sub_Courses
 
 class SyllabusInline(admin.TabularInline):
     model = Syllabus
@@ -14,6 +14,10 @@ class SubjectContentInline(admin.TabularInline):
     model = Subject_Content
     extra = 1  
 
+class Sub_Courses(admin.TabularInline):
+    model = Sub_Courses
+    extra = 1
+
 class SubjectInline(admin.TabularInline): 
     model = Subject
     extra = 1  
@@ -26,7 +30,7 @@ class ExamPatternInline(admin.TabularInline):
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('title', 'banner')
     search_fields = ('title',)
-    inlines = [SubjectInline]  
+    inlines = [Sub_Courses, SubjectInline]  
     ordering = ['id']
 
 @admin.register(Subject)

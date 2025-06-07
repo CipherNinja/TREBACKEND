@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Course, Subject, Syllabus, PYQ
+from .models import Course, Subject, Syllabus, PYQ, Sub_Courses
 from django.http import FileResponse, JsonResponse, Http404
 from django.conf import settings
 import os
@@ -110,14 +110,48 @@ def course_api(request):
 @api_view(['GET'])
 def pyq_api(request):
     course_id = request.GET.get('course_id')
+    sub_courses_id = request.GET.get('sub_courses')
     subject_id = request.GET.get('subject_id')
     file_name = request.GET.get('file')
 
-    # Return specific file
-    if course_id and subject_id and file_name:
+    # ✅ Case 1: Return Sub-Courses with IDs and Titles
+    if course_id and not sub_courses_id and not subject_id:
         try:
             course = Course.objects.get(id=course_id)
-            subject = Subject.objects.get(id=subject_id, course=course)
+            sub_courses = course.sub_courses.all()
+            sub_course_data = [
+                {"id": sc.id, "title": sc.title}
+                for sc in sub_courses
+            ]
+            return JsonResponse({course.title: sub_course_data})
+        except Course.DoesNotExist:
+            return JsonResponse({"error": "Course not found"}, status=404)
+
+    # ✅ Case 2: Return PYQs grouped under subjects and sub-course
+    if course_id and sub_courses_id and not file_name and not subject_id:
+        try:
+            course = Course.objects.get(id=course_id)
+            sub_course = course.sub_courses.get(id=sub_courses_id)
+        except (Course.DoesNotExist, Sub_Courses.DoesNotExist):
+            return JsonResponse({"error": "Invalid course or sub-course ID"}, status=404)
+
+        subjects = course.subjects.all()
+        sub_course_data = {}
+
+        for subject in subjects:
+            pyq_files = [os.path.basename(pyq.file.name) for pyq in subject.pyqs.all()]
+            if pyq_files:
+                sub_course_data.setdefault(sub_course.title, {})[subject.title] = pyq_files
+
+        data = {course.title: {sub_course.title: sub_course_data.get(sub_course.title, {})}}
+        return JsonResponse(data)
+
+    # ✅ Case 3: Serve a specific file
+    if course_id and sub_courses_id and subject_id and file_name:
+        try:
+            course = Course.objects.get(id=course_id)
+            sub_course = course.sub_courses.get(id=sub_courses_id)
+            subject = course.subjects.get(id=subject_id)
             pyq = subject.pyqs.get(file__icontains=file_name)
             file_path = pyq.file.path
 
@@ -125,45 +159,8 @@ def pyq_api(request):
                 return FileResponse(open(file_path, 'rb'), content_type='application/pdf')
             else:
                 raise Http404("File not found")
-        except (Course.DoesNotExist, Subject.DoesNotExist, PYQ.DoesNotExist):
-            return JsonResponse({"error": "Invalid course, subject, or file name"}, status=404)
 
-    # Return specific subject's PYQs grouped under subject title
-    if course_id and subject_id:
-        try:
-            course = Course.objects.get(id=course_id)
-            subject = Subject.objects.get(id=subject_id, course=course)
+        except (Course.DoesNotExist, Sub_Courses.DoesNotExist, Subject.DoesNotExist, PYQ.DoesNotExist):
+            return JsonResponse({"error": "Invalid course, sub-course, subject, or file name"}, status=404)
 
-            pyq_files = [os.path.basename(pyq.file.name) for pyq in subject.pyqs.all()]
-            data = {
-                course.title: {
-                    subject.title: pyq_files
-                }
-            }
-            return JsonResponse(data)
-
-        except Course.DoesNotExist:
-            return JsonResponse({"error": "Course not found"}, status=404)
-        except Subject.DoesNotExist:
-            return JsonResponse({"error": "Subject not found"}, status=404)
-
-    # Fallback to return all PYQs if only course_id is given
-    if course_id:
-        try:
-            course = Course.objects.get(id=course_id)
-        except Course.DoesNotExist:
-            return JsonResponse({"error": "Course not found"}, status=404)
-
-        data = {}
-        subject_map = {}
-
-        for subject in course.subjects.all():
-            subject_map[subject.title] = [
-                os.path.basename(pyq.file.name) for pyq in subject.pyqs.all()
-            ]
-
-        data[course.title] = subject_map
-        return JsonResponse(data)
-
-    return JsonResponse({"error": "course_id is required"}, status=400)
-
+    return JsonResponse({"error": "Invalid query parameters"}, status=400)
