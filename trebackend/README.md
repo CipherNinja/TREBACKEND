@@ -24,7 +24,7 @@
    - **URL**: `/api/v1/?course_id={course_id}&subject_id={subject_id}&syllabus={filename}`
    - **Method**: `GET`
    - **Description**: Returns the specified syllabus file as a PDF download for the given subject.
-6. **Fetch All Sub-Courses of a Course**
+6. **Fetch All Sub-Courses of a Course with Subjects**
    - **URL**: `/api/v2/?course_id={course_id}`
    - **Method**: `GET`
    - **Description**: Returns a list of all sub-courses (with IDs and titles) under the specified course.
@@ -170,7 +170,7 @@
 }
 ```
 
-### Fetch All Sub-Courses of a Course
+### Fetch All Sub-Courses of a Course with Subjects
 
 **Endpoint**: `GET /api/v2/?course_id=1`
 **Response**:
@@ -180,15 +180,37 @@
   "BPSC TRE": [
     {
       "id": 1,
-      "title": "BPSC TRE 1.0"
+      "title": "BPSC TRE 1.0",
+      "subjects": [
+        {
+          "id": 14,
+          "title": "PGT (11-12)"
+        }
+      ]
     },
     {
       "id": 2,
-      "title": "BPSC TRE 2.0"
+      "title": "BPSC TRE 2.0",
+      "subjects": [
+        {
+          "id": 14,
+          "title": "PGT (11-12)"
+        },
+        {
+          "id": 15,
+          "title": "TGT (9-10)"
+        }
+      ]
     },
     {
       "id": 3,
-      "title": "BPSC TRE 3.0"
+      "title": "BPSC TRE 3.0",
+      "subjects": [
+        {
+          "id": 14,
+          "title": "PGT (11-12)"
+        }
+      ]
     }
   ]
 }

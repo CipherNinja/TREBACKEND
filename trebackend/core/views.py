@@ -119,10 +119,17 @@ def pyq_api(request):
         try:
             course = Course.objects.get(id=course_id)
             sub_courses = course.sub_courses.all()
-            sub_course_data = [
-                {"id": sc.id, "title": sc.title}
-                for sc in sub_courses
-            ]
+            subjects = course.subjects.all()
+
+            subject_data = [{"id": subject.id, "title": subject.title} for subject in subjects]
+
+            sub_course_data = []
+            for sc in sub_courses:
+                sub_course_data.append({
+                    "id": sc.id,
+                    "title": sc.title,
+                    "subjects": subject_data  # all course subjects (shared)
+                })
             return JsonResponse({course.title: sub_course_data})
         except Course.DoesNotExist:
             return JsonResponse({"error": "Course not found"}, status=404)
