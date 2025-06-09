@@ -142,16 +142,20 @@ def pyq_api(request):
         except (Course.DoesNotExist, Sub_Courses.DoesNotExist):
             return JsonResponse({"error": "Invalid course or sub-course ID"}, status=404)
 
+        result = {course.title: {sub_course.title: []}}
+
         subjects = course.subjects.all()
-        sub_course_data = {}
-
         for subject in subjects:
-            pyq_files = [os.path.basename(pyq.file.name) for pyq in subject.pyqs.all()]
-            if pyq_files:
-                sub_course_data.setdefault(sub_course.title, {})[subject.title] = pyq_files
+            pyqs = subject.pyqs.all()
+            pyq_files = [os.path.basename(pyq.file.name) for pyq in pyqs if pyq.file]
 
-        data = {course.title: {sub_course.title: sub_course_data.get(sub_course.title, {})}}
-        return JsonResponse(data)
+            if pyq_files:
+                result[course.title][sub_course.title].append({
+                    "id": subject.id,
+                    subject.title: pyq_files
+                })
+
+        return JsonResponse(result)
 
     # ✅ Case 3: Serve a specific file
     if course_id and sub_courses_id and subject_id and file_name:

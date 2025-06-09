@@ -224,22 +224,35 @@
 ```json
 {
   "BPSC TRE": {
-    "BPSC TRE 1.0": {
-      "PGT (11-12)": [
-        "BPSC-Question-Paper-For-Class-11-12-Chemistry_SnMzKD4.pdf",
-        "BPSC-Question-Paper-For-Class-11-12-Zoology_ZERDdqL.pdf"
-      ],
-      "TGT (9-10)": [
-        "BPSC-Question-Paper-For-Class-9-10-Maths_LNLYxyz.pdf",
-        "BPSC-Question-Paper-For-Class-9-10-Arabic.pdf"
-      ],
-      "UPPER PRT (6-8)": [
-        "BPSC-Question-Paper-For-Class-6-8-English_UVQtBRB.pdf"
-      ],
-      "PRT (1-5)": [
-        "BPSC-Question-Paper-For-Class-1-5-General-Studies_1_ax2Rp8t.pdf"
-      ]
-    }
+    "BPSC TRE 1.0": [
+      {
+        "id": 14,
+        "PGT (11-12)": [
+          "BPSC-Question-Paper-For-Class-11-12-Chemistry_SnMzKD4.pdf",
+          "BPSC-Question-Paper-For-Class-11-12-Zoology_ZERDdqL.pdf"
+        ]
+      },
+      {
+        "id": 15,
+        "TGT (9-10)": [
+          "BPSC-Question-Paper-For-Class-9-10-Maths_LNLYxyz.pdf",
+          "BPSC-Question-Paper-For-Class-9-10-Arabic.pdf"
+        ]
+      },
+      {
+        "id": 16,
+        "UPPER PRT (6-8)": [
+          "BPSC-Question-Paper-For-Class-6-8-English_UVQtBRB.pdf",
+          "BPSC-Question-Paper-For-Class-6-8-English_1_0sEl3Z5.pdf"
+        ]
+      },
+      {
+        "id": 17,
+        "PRT (1-5)": [
+          "BPSC-Question-Paper-For-Class-1-5-General-Studies_1_ax2Rp8t.pdf"
+        ]
+      }
+    ]
   }
 }
 ```
